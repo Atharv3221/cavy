@@ -8,6 +8,8 @@ func NewCache[K comparable, V any](policy Policy, capacity int) Cache[K, V] {
 		return internal.NewLRU[K, V](capacity)
 	case LFU:
 		return internal.NewLFU[K, V](capacity)
+	case FIFO:
+		return internal.NewFIFO[K, V](capacity)
 	default:
 		panic("cavy: invalid cache policy")
 	}

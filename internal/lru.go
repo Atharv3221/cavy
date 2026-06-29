@@ -1,25 +1,7 @@
 package internal
 
-import (
-	"github.com/Atharv3221/cavy/utils"
-)
-
-type node[K comparable, V any] struct {
-	key   K
-	value V
-	prev  *node[K, V]
-	next  *node[K, V]
-}
-
 type lru[K comparable, V any] struct {
-	capacity int
-	items    map[K]*node[K, V]
-	head     *node[K, V]
-	tail     *node[K, V]
-}
-
-func (l *lru[K, V]) Len() int {
-	return len(l.items)
+	general_structure[K, V]
 }
 
 func NewLRU[K comparable, V any](capacity int) *lru[K, V] {
@@ -27,8 +9,10 @@ func NewLRU[K comparable, V any](capacity int) *lru[K, V] {
 		capacity = DefaultMaxCapacity
 	}
 	return &lru[K, V]{
-		capacity: capacity,
-		items:    make(map[K]*node[K, V]),
+		general_structure: general_structure[K, V]{
+			capacity: capacity,
+			items:    make(map[K]*node[K, V]),
+		},
 	}
 }
 
@@ -58,25 +42,6 @@ func (l *lru[K, V]) Get(key K) (V, bool) {
 	return n.value, true
 }
 
-func (l *lru[K, V]) GetAll() map[K]V {
-	result := make(map[K]V, len(l.items))
-	for key, n := range l.items {
-		result[key] = n.value
-	}
-	return result
-}
-
-func (l *lru[K, V]) SetCapacity(capacity int) bool {
-	var result bool
-	l.capacity, result = utils.SetMaxCapacity(l.capacity, capacity, l.Len())
-	return result
-}
-
-func (l *lru[K, V]) Contains(key K) bool {
-	_, conatins := l.items[key]
-	return conatins
-}
-
 func (l *lru[K, V]) Delete(key K) bool {
 	if !l.Contains(key) {
 		return false
@@ -99,10 +64,6 @@ func (l *lru[K, V]) Delete(key K) bool {
 
 	delete(l.items, key)
 	return true
-}
-
-func (l *lru[K, V]) GetMaxCapacity() int {
-	return l.capacity
 }
 
 // Removes last accessed element
